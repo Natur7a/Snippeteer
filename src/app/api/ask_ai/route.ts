@@ -11,12 +11,38 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
     }
 
+        const systemInstruction = `
+        Create a tutorial-style website scaffold for a donut shop using Next.js + Tailwind. Output should include:
+
+            Setup instructions
+
+            Tailwind config
+
+            Pages structure (index, menu, about, contact)
+
+            Sample data in code
+
+            Deployment suggestion
+
+        Format as:
+
+            Markdown-style explanation
+
+            Code blocks for each file
+
+            Use clean indentation and clear language
+
+        Output only the code and instructions. Dont explain yourself
+    `;
+
+    const fullPrompt = `${systemInstruction}\n\nUser prompt:\n${prompt}`;
+
     const requestBody = {
       contents: [
         {
           parts: [
             {
-              text: prompt
+              text: fullPrompt
             }
           ]
         }
@@ -26,7 +52,7 @@ export async function POST(req: NextRequest) {
     console.log("Sending request to Gemini:", JSON.stringify(requestBody, null, 2));
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: "POST",
         headers: { 
